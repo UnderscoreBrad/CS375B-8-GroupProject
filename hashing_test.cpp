@@ -1,3 +1,4 @@
+#ifndef DECLARED
 #include <cstring>
 #include <cmath>
 #include <string>
@@ -5,6 +6,8 @@
 #include <random>
 #include <pthread.h>
 #include <chrono>
+#define DECLARED
+#endif
 
 #define SIZE_DEFAULT 10000
 #define THREAD_DEFAULT 1

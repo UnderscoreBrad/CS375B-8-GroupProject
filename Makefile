@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := create
 CC = g++
 FLAGS = -g -Ofast -Wall -Wextra -std=c++17 -pedantic
-OBJECTS = hashing_test.o
+OBJECTS = hashing_test.o tables.cpp
 EXECUTABLE = hashing_test
 NAME = CS375B-8
 
