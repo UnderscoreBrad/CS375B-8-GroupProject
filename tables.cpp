@@ -19,9 +19,9 @@ struct ListNode{
 //bool division: if true - use division algorithm, if false, multiplication
 unsigned hash_index(bool division, unsigned m, double A, unsigned key, unsigned i){
 	if(division){
-		return key % m;
+		return (key+i) % m;
 	}else{
-		return floor((double)m * ((double)key * A) - floor((double)key * A));
+		return floor((double)m * ((double)(key+i) * A) - floor((double)(key+i) * A));
 	}
 }
 
