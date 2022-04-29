@@ -9,13 +9,15 @@
 #define DECLARED
 #endif
 
-#define SIZE_DEFAULT 10000
+#include "tables.cpp"
+
+#define SIZE_DEFAULT 100000
 #define THREAD_DEFAULT 1
 #define THREAD_MAX 16
 #define INPUT_MIN 0
 #define INPUT_MAX 10000
 
-std::vector<unsigned> input;
+std::vector<int> input;
 unsigned long input_per_thread;
 
 //create_input: creates a subset of the test array, subset is specified by arg
@@ -23,7 +25,7 @@ unsigned long input_per_thread;
 void *create_input(void* arg){
 	unsigned long lower_bound = *(unsigned long*) arg;
 	unsigned long upper_bound = lower_bound + input_per_thread;
-	std::uniform_int_distribution<unsigned> unif(INPUT_MIN,INPUT_MAX);
+	std::uniform_int_distribution<int> unif(INPUT_MIN,INPUT_MAX);
 	std::default_random_engine random;
 	random.seed(pthread_self());
 	for(unsigned long i = lower_bound; i < upper_bound; i++){
@@ -61,5 +63,7 @@ int main(int argc, char* argv[]){
 
 	//At this point, the vector input holds everything we need to insert into our tables.
 
+	//Following line is a static test to make sure we get a LOT of collisions
+	std::cout << linear_probing(true, &input, input.size(), 0, input.size()) << std::endl;
 	return EXIT_SUCCESS;
 }
