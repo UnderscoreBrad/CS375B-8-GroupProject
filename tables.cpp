@@ -1,7 +1,49 @@
+#ifndef DECLARED
+#include <cstring>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <random>
+#include <pthread.h>
+#include <chrono>
+#define DECLARED
+#endif
+
+#define NIL -1
+#define DELETED -2
+
 //ListNode struct for chained hash table
 //Unlikely that we'll need prev
 struct ListNode{
-    unsigned value;
-    ListNode* prev;
-    ListNode* next;
+	int value;
+	ListNode* prev;
+	ListNode* next;
 };
+
+//bool division: if true - use division algorithm, if false, multiplication
+unsigned long hash_index(bool division, unsigned m, double A, int key, int i){
+	//in testing, key should never be negative. negative values will be reserved for NIL and DELETED
+	if(division){
+		return (key+i) % m;
+	}else{
+		return floor((double)m * ((double)(key+i) * A) - floor((double)(key+i) * A));
+	}
+}
+
+unsigned linear_probing(bool division, std::vector<int>* input, unsigned m, double A, unsigned long size){
+	unsigned collisions = 0;
+	std::vector<int> hash_table(size,NIL);
+	unsigned long placement = 0;
+	for(unsigned x = 0; x < input->size(); x++){
+		int i = 0;
+		int key = (*input)[x];
+		//std::cout << key << std::endl;
+		do{
+			placement = hash_index(division, m, A, key, i);
+			i++;
+		}while(hash_table[placement] != NIL && hash_table[placement] != DELETED);
+		collisions += i;
+		hash_table[placement] = key;
+	}
+	return collisions;
+}
