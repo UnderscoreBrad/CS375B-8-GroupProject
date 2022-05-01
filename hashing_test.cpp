@@ -63,7 +63,9 @@ int main(int argc, char* argv[]){
 
 	//At this point, the vector input holds everything we need to insert into our tables.
 
-	//Following line is a static test to make sure we get a LOT of collisions
+	//These lines are designed to be WORST CASE to make sure our functions work.
 	std::cout << linear_probing(true, &input, input.size(), 0, input.size()) << std::endl;
+	std::cout << quadratic_probing(true, &input, input.size(), 0, input.size(), 1, 1) << std::endl;
+	std::cout << double_hashing(true, true, &input, input.size(), 14178, 12413, 0, input.size()) << std::endl;
 	return EXIT_SUCCESS;
 }
