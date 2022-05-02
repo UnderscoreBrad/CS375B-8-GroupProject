@@ -35,18 +35,7 @@ void *create_input(void* arg){
 	return nullptr;
 }
 
-//argv[1] == input size (unsigned long)
-//if not specified, use default
-//argv[2] == thread count
-//if not specified, use default
-int main(int argc, char* argv[]){
-	unsigned long input_size = SIZE_DEFAULT;
-	unsigned thread_count = THREAD_DEFAULT;
-	if(argc > 1){
-		input_size = std::stol(argv[1]);
-		if(argc > 2) thread_count = std::stoi(argv[2]);
-	}
-	input.resize(input_size);   
+void generate_input_vector(unsigned long input_size, unsigned thread_count){
 	pthread_t tids[16];
 	pthread_attr_t attr;
 	pthread_attr_init(&attr); 
@@ -61,6 +50,21 @@ int main(int argc, char* argv[]){
 		pthread_join(tids[i], NULL);
 	}
 
+}
+
+//argv[1] == input size (unsigned long)
+//if not specified, use default
+//argv[2] == thread count
+//if not specified, use default
+int main(int argc, char* argv[]){
+	unsigned long input_size = SIZE_DEFAULT;
+	unsigned thread_count = THREAD_DEFAULT;
+	if(argc > 1){
+		input_size = std::stol(argv[1]);
+		if(argc > 2) thread_count = std::stoi(argv[2]);
+	}
+	input.resize(input_size);   
+	generate_input_vector(input_size, thread_count);
 	//At this point, the vector input holds everything we need to insert into our tables.
 
 	//These lines are designed to be WORST CASE to make sure our functions work.

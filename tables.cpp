@@ -15,10 +15,15 @@
 //ListNode struct for chained hash table
 //Unlikely that we'll need prev
 struct ListNode{
-	int value;
+	int key = -1;
 	ListNode* prev;
 	ListNode* next;
 };
+
+std::vector<int> linear_probing_table;
+std::vector<int> quadratic_probing_table;
+std::vector<int> double_hashing_table;
+std::vector<ListNode> chaining_table;
 
 //bool division: if true - use division algorithm, if false, multiplication
 unsigned long hash_index(bool division, unsigned m, double A, int key, int i){
@@ -30,57 +35,61 @@ unsigned long hash_index(bool division, unsigned m, double A, int key, int i){
 	}
 }
 
+void clear_tables(){
+	linear_probing_table.clear();
+	quadratic_probing_table.clear();
+	double_hashing_table.clear();
+	chaining_table.clear();
+}
+
 unsigned linear_probing(bool division, std::vector<int>* input, unsigned m, double A, unsigned long size){
 	unsigned collisions = 0;
-	std::vector<int> hash_table(size,NIL);
+	linear_probing_table.resize(size,NIL);
 	unsigned long placement = 0;
 	for(unsigned x = 0; x < input->size(); x++){
 		int i = 0;
 		int key = (*input)[x];
-		//std::cout << key << std::endl;
 		do{
 			placement = hash_index(division, m, A, key, i);
 			i++;
-		}while(hash_table[placement] != NIL && hash_table[placement] != DELETED);
+		}while(linear_probing_table[placement] != NIL && linear_probing_table[placement] != DELETED);
 		collisions += i;
-		hash_table[placement] = key;
+		linear_probing_table[placement] = key;
 	}
 	return collisions;
 }
 
 unsigned quadratic_probing(bool division, std::vector<int>* input, unsigned m, double A, unsigned long size, unsigned c1, unsigned c2){
 	unsigned collisions = 0;
-	std::vector<int> hash_table(size,NIL);
+	quadratic_probing_table.resize(size,NIL);
 	unsigned long placement = 0;
 	for(unsigned x = 0; x < input->size(); x++){
 		int i = 0;
 		int key = (*input)[x];
-		//std::cout << key << std::endl;
 		do{
 			int temp = c1 * i + c2 * (i * i);
 			placement = hash_index(division, m, A, key, temp);
 			i++;
-		}while(hash_table[placement] != NIL && hash_table[placement] != DELETED);
+		}while(quadratic_probing_table[placement] != NIL && quadratic_probing_table[placement] != DELETED);
 		collisions += i;
-		hash_table[placement] = key;
+		quadratic_probing_table[placement] = key;
 	}
 	return collisions;
 }
 
 unsigned double_hashing(bool division1, bool division2, std::vector<int>* input, unsigned m, unsigned m1, unsigned m2, double A, unsigned long size){
 	unsigned collisions = 0;
-	std::vector<int> hash_table(size,NIL);
+	double_hashing_table.resize(size,NIL);
 	unsigned long placement = 0;
 	for(unsigned x = 0; x < input->size(); x++){
 		int i = 0;
 		int key = (*input)[x];
-		//std::cout << key << std::endl;
 		do{
 			placement = (hash_index(division1, m1, A, key, 0) + i*hash_index(division2, m2, A, key, 0))%m;
 			i++;
-		}while(hash_table[placement] != NIL && hash_table[placement] != DELETED);
+		}while(double_hashing_table[placement] != NIL && double_hashing_table[placement] != DELETED);
 		collisions += i;
-		hash_table[placement] = key;
+		double_hashing_table[placement] = key;
 	}
 	return collisions;
 }
