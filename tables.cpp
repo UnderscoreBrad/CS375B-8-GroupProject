@@ -109,7 +109,7 @@ unsigned quadratic_probing(bool division, std::vector<int>* input, unsigned m, d
 	return collisions;
 }
 
-unsigned quadratic_delete(bool division1, bool division2, std::vector<int>* elements, unsigned m, unsigned m1, unsigned m2, double A){
+unsigned double_hashing_delete(bool division1, bool division2, std::vector<int>* elements, unsigned m, unsigned m1, unsigned m2, double A){
 	unsigned collisions = 0;
 	unsigned long placement = 0;
 	for(unsigned x = 0; x < elements->size(); x++){
