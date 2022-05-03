@@ -29,20 +29,25 @@ public:
 	void insert(int num) {
 		int i = hash(num);
 
+		// Count a collision if this list has an entry already.
 		if (table[i].size() > 0)
 			collisions++;
 
 		// Insert at head of list
-		table[hash(num)].push_front(num);
+		table[i].push_front(num);
 	}
 
 	// int search(int key) {
 
 	// }
 
-	// void delete(int key) {
+	void remove(int key) {
+		int i = hash(key);
 		
-	// }
+		// WARNING: Will remove ALL occurances of key
+		// Does not matter if keys are unique
+		table[i].remove(key);
+	}
 
 	// Calculates the load factor
 	float load_factor() {
