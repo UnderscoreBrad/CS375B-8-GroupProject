@@ -130,29 +130,45 @@ void* double_hashing_tests(void* arg){
 
 // Runs test on chained hash table and prints out results
 void *chaining_tests(void *arg){
-	auto start = std::chrono::system_clock::now();
 
 	int table_size = input.size();
 
-	ChainingTable ct(table_size);
+	// Division method test
+	auto start = std::chrono::system_clock::now();
+	ChainingTable ct(table_size, true, 0); 
 	ct.insert(input);
-
 	auto end = std::chrono::system_clock::now();
+
 	std::chrono::duration<double> time = end - start;
 	std::cout << "Chained Hash Table | "
 	          << "Size: " << table_size << " | "
-			  << "Division hashing | "
-			  << "m = size | "
-			  << "Completion time: " << time.count() << "s | "
-			  << "Collisions: " << ct.get_collisions() << " | "
-			  << "Load factor: " << ct.load_factor()
-			  << std::endl;
+	          << "Division hashing | "
+	          << "m = size | "
+	          << "Completion time: " << time.count() << "s | "
+	          << "Collisions: " << ct.get_collisions() << " | "
+	          << "Load factor: " << ct.load_factor()
+	          << std::endl;
+
+	// Multiplication method test
+	start = std::chrono::system_clock::now();
+	ct = ChainingTable(table_size, false, .618);
+	ct.insert(input);
+	end = std::chrono::system_clock::now();
+
+	time = end - start;
+	std::cout << "Chained Hash Table | "
+	          << "Size: " << table_size << " | "
+	          << "Multiplication hashing | "
+	          << "m = size | A = .618 | "
+	          << "Completion time: " << time.count() << "s | "
+	          << "Collisions: " << ct.get_collisions() << " | "
+	          << "Load factor: " << ct.load_factor()
+	          << std::endl;
 
 	return 0;
 }
 
-// Usage: ./hashing_test <input size> <thread count> -U
-// -U   use unique numbers
+// Usage: ./hashing_test <input size> <thread count> "unique"
 //argv[1] == input size (unsigned long)
 //if not specified, use default
 //argv[2] == thread count

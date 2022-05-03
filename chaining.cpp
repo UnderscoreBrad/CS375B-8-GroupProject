@@ -2,10 +2,24 @@
 
 using namespace std;
 
-ChainingTable::ChainingTable(int s)
+//bool division: if true - use division algorithm, if false, multiplication
+static uint64_t hash_index(bool division, unsigned m, double A, int key){
+	if(division){
+		return (key) % m;
+	}else{
+		//uint64_t hash = floor((double) m * ((double) key * A - floor((double)key * A));
+		uint64_t hash = floor(  m * (  (float) key*A - floor((float) key*A)  )  );
+		//cout << "multiplication hash = " << hash << endl;
+		return hash;
+	}
+}
+
+ChainingTable::ChainingTable(int _slots, bool _division, float _a)
 {
-	slots = s;
-	table = new list<int>[s];
+	slots = _slots;
+	table = new list<int>[_slots];
+	A = _a;
+	division = _division;
 }
 
 void ChainingTable::insert(vector<int> numbers)
@@ -14,21 +28,21 @@ void ChainingTable::insert(vector<int> numbers)
 		insert(i);
 }
 
-void ChainingTable::insert(int num)
+void ChainingTable::insert(int key)
 {
-	int i = hash(num);
+	int i = hash_index(division, slots, A, key);
 
 	// Count a collision if this list has an entry already.
 	if (table[i].size() > 0)
 		collis++;
 
 	// Insert at head of list
-	table[i].push_front(num);
+	table[i].push_front(key);
 }
 
 void ChainingTable::remove(int key)
 {
-	int i = hash(key);
+	int i = hash_index(division, slots, A, key);
 		
 	// WARNING: Will remove ALL occurances of key
 	// Does not matter if keys are unique

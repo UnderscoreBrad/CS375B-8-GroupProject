@@ -1,23 +1,25 @@
 #pragma once
 
+#include <stdint.h>
+
 #include <list>
 #include <vector>
+#include <cmath>
+#include <iostream>
 
 // A hash table that uses chaining
 class ChainingTable {
 private:
 	int slots;
 	int collis = 0;
+	float A;
+	bool division;
 
 	// std::list is a built-in linked list implementation
 	std::list<int> *table;
 
-	int hash(int key) {
-		return key % slots;
-	}
-
 public:
-	ChainingTable(int slots);
+	ChainingTable(int slots, bool division, float a);
 
 	void insert(std::vector<int> numbers);
 	
