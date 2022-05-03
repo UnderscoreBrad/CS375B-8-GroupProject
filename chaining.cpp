@@ -43,7 +43,7 @@ float ChainingTable::load_factor()
 		total_keys += table[i].size();
 	}
 
-	return total_keys / slots;
+	return (float) total_keys / slots;
 }
 
 int ChainingTable::get_collisions()
