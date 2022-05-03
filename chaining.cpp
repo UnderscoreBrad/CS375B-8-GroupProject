@@ -37,10 +37,6 @@ public:
 		table[i].push_front(num);
 	}
 
-	// int search(int key) {
-
-	// }
-
 	void remove(int key) {
 		int i = hash(key);
 		
