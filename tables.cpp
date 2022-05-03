@@ -97,7 +97,7 @@ unsigned linear_probing(bool division, const std::vector<int>* input, unsigned m
 		do{
 			if(i == m){
 				std::cout << "ERROR: Hash Table Overflow: " << m << std::endl;
-				break;
+				return collisions;
 			}
 			placement = hash_index(division, m, A, key, i);
 			i++;
@@ -157,7 +157,7 @@ unsigned quadratic_probing(bool division, const std::vector<int>* input, unsigne
 		do{
 			if(i == m){
 				std::cout << "ERROR: Hash Table Overflow" << std::endl;
-				break;
+				return collisions;
 			}
 			int temp = c1 * i + c2 * (i * i);
 			placement = hash_index(division, m, A, key, temp);
@@ -216,9 +216,9 @@ unsigned double_hashing(bool division1, bool division2, const std::vector<int>* 
 		do{
 			if(i == m){
 				std::cout << "ERROR: Hash Table Overflow" << std::endl;
-				break;
+				return collisions;
 			}
-			placement = (hash_index(division1, m1, A, key, 0) + i*hash_index(division2, m2, A, key, 0))%m;
+			placement = ((hash_index(division1, m1, A, key, 0)) + i*(hash_index(division2, m2, A, key, i)))%m;
 			i++;
 		}while(double_hashing_table[placement] != NIL && double_hashing_table[placement] != DELETED);
 		collisions += i-1;
