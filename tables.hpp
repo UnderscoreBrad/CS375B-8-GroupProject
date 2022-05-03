@@ -1,6 +1,5 @@
 #pragma once
 
-#ifndef DECLARED
 #include <cstring>
 #include <cmath>
 #include <string>
@@ -8,8 +7,7 @@
 #include <random>
 #include <pthread.h>
 #include <chrono>
-#define DECLARED
-#endif
+#include <algorithm>
 
 #define NIL -1
 #define DELETED -2
@@ -17,6 +15,11 @@
 std::vector<int> linear_probing_table;
 std::vector<int> quadratic_probing_table;
 std::vector<int> double_hashing_table;
+
+void remove_duplicates(std::vector<int> & vec) {
+	sort( vec.begin(), vec.end() );
+	vec.erase( unique( vec.begin(), vec.end() ), vec.end() );
+}
 
 void clear_table(int arg){
 	if(arg == 0){
