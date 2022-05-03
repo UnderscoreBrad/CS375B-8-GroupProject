@@ -72,30 +72,60 @@ void generate_helper_arrays(unsigned long size){
 
 void* linear_probing_tests(void* arg){
 	clear_table(FLAG_LINEAR);
-	//test 1: division with m = size
+	//test 1: division with m = size, full table
 	auto start = std::chrono::system_clock::now();
 	unsigned collisions = 0;
-	collisions += linear_probing(true, &input, input.size(), 0.0, input.size());
-	collisions += linear_delete(true, &delete_data, input.size(), 0.0);
-	collisions += linear_probing(true, &insert_data, input.size(), 0.0, input.size()); 
-	collisions += linear_search(true, &insert_data, input.size(), 0.0);
+	unsigned m = input.size();
+	double A = 0.0;
+	collisions += linear_probing(true, &input, m, A, input.size());
+	collisions += linear_delete(true, &delete_data, m, A);
+	collisions += linear_probing(true, &insert_data, m, A, input.size()); 
+	collisions += linear_search(true, &insert_data, m, A);
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> duration = end - start;
-    std::cout << "Linear Probing | division | m = size | Completion Time: " << duration.count() << "ms | Collisions: " << collisions << std::endl;
+    std::cout << "Linear Probing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
 	//test 2: multiplication with m = size
 
 	return arg;
 }
 
+//WARNING: Quadratic probing cannot be used for hash tables with 100% capacity (unless we pick the perfect constants)
 void* quadratic_probing_tests(void* arg){
 	clear_table(FLAG_QUADRATIC);
-
+	//test 1: division with m = size, full table
+	auto start = std::chrono::system_clock::now();
+	unsigned collisions = 0;
+	unsigned m = input.size();
+	double A = 0.0;
+	unsigned c1 = 1;
+	unsigned c2 = 2;
+	collisions += quadratic_probing(true, &input, m, A, input.size(), c1, c2);
+	collisions += quadratic_delete(true, &delete_data, m, A, c1, c2);
+	collisions += quadratic_probing(true, &insert_data, m, A, input.size(), c1, c2); 
+	//collisions += quadratic_search(true, &insert_data, m, A, c1, c2);
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Quadratic Probing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
+	//test 2: multiplication with m = ?, A = ?
 	return arg;
 }
 
+//WARNING: Double cannot be used for hash tables with 100% capacity (unless we pick the perfect constants)
 void* double_hashing_tests(void* arg){
 	clear_table(FLAG_DOUBLE_HASH);
-
+	auto start = std::chrono::system_clock::now();
+	unsigned collisions = 0;
+	unsigned m = input.size()+30000;
+	double A = 0.0;
+	unsigned m1 = input.size()+30000;//97861;
+	unsigned m2 = input.size()+30000;//99409;
+	collisions += double_hashing(true, true, &input, m, m1, m2, A, input.size()+30000);
+	collisions += double_hashing_delete(true, true, &delete_data, m, m1, m2, A);
+	collisions += double_hashing(true, true, &insert_data, m, m1, m2, A, input.size()+30000); 
+	collisions += double_hashing_search(true, true, &insert_data, m, m1, m2, A);
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Double Hashing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
 	return arg;
 }
 
@@ -127,7 +157,11 @@ int main(int argc, char* argv[]){
 	//For instance, we can test linear and quadratic probing simultaneously on separate threads,
 	//but not two linear probing tests simultaneously.
 	//mostly because i was lazy about how i set up the tests.
-	linear_probing_tests(nullptr);
+
+	//these tests are just to test functionality, they aren't fully implemented yet.
+	//linear_probing_tests(nullptr);
+	quadratic_probing_tests(nullptr);
+	//double_hashing_tests(nullptr);
 
 	return EXIT_SUCCESS;
 }
