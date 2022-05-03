@@ -1,4 +1,3 @@
-#ifndef DECLARED
 #include <cstring>
 #include <cmath>
 #include <string>
@@ -6,10 +5,10 @@
 #include <random>
 #include <pthread.h>
 #include <chrono>
-#define DECLARED
-#endif
+#include <iomanip>
 
 #include "tables.hpp"
+#include "chaining.hpp"
 
 #define SIZE_DEFAULT 100000
 #define THREAD_DEFAULT 1
@@ -129,12 +128,31 @@ void* double_hashing_tests(void* arg){
 	return arg;
 }
 
-void* chaining_tests(void* arg){
-	clear_table(FLAG_CHAINING);
+// Runs test on chained hash table and prints out results
+void *chaining_tests(void *arg){
+	auto start = std::chrono::system_clock::now();
 
-	return arg;
+	int table_size = input.size();
+
+	ChainingTable ct(table_size);
+	ct.insert(input);
+
+	auto end = std::chrono::system_clock::now();
+	std::chrono::duration<double> time = end - start;
+	std::cout << "Chained Hash Table | "
+	          << "Size: " << table_size << " | "
+			  << "Division hashing | "
+			  << "m = size | "
+			  << "Completion time: " << time.count() << "s | "
+			  << "Collisions: " << ct.get_collisions() << " | "
+			  << "Load factor: " << ct.load_factor()
+			  << std::endl;
+
+	return 0;
 }
 
+// Usage: ./hashing_test <input size> <thread count> -U
+// -U   use unique numbers
 //argv[1] == input size (unsigned long)
 //if not specified, use default
 //argv[2] == thread count
@@ -142,15 +160,22 @@ void* chaining_tests(void* arg){
 int main(int argc, char* argv[]){
 	unsigned long input_size = SIZE_DEFAULT;
 	unsigned thread_count = THREAD_DEFAULT;
-	if(argc > 1){
-		input_size = std::stol(argv[1]);
-		if(argc > 2) thread_count = std::stoi(argv[2]);
-	}
+	bool unique = false;
+
+	if (argc > 1) input_size = std::stol(argv[1]);
+	if (argc > 2) thread_count = std::stoi(argv[2]);
+	if (argc > 3) unique = strcmp(argv[3], "unique");
+
 	unsigned long sz = input_size / 100;
 	input.resize(input_size);   
 	delete_data.resize(sz);
 	generate_input_vector(input_size, thread_count);
 	generate_helper_arrays(sz);
+
+	// Make sure input numbers is unique
+	if (unique)
+		remove_duplicates(input);
+	
 	//At this point, the vector input holds everything we need to insert into our tables.
 
 	//When testing, due to structure, we cannot test two of the same type of table simultaneously.
@@ -160,8 +185,9 @@ int main(int argc, char* argv[]){
 
 	//these tests are just to test functionality, they aren't fully implemented yet.
 	//linear_probing_tests(nullptr);
-	quadratic_probing_tests(nullptr);
+	//quadratic_probing_tests(nullptr);
 	//double_hashing_tests(nullptr);
+	chaining_tests(nullptr);
 
 	return EXIT_SUCCESS;
 }
