@@ -9,7 +9,7 @@
 #define DECLARED
 #endif
 
-#include "tables.cpp"
+#include "tables.hpp"
 
 #define SIZE_DEFAULT 100000
 #define THREAD_DEFAULT 1

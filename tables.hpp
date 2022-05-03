@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef DECLARED
 #include <cstring>
 #include <cmath>
@@ -12,18 +14,9 @@
 #define NIL -1
 #define DELETED -2
 
-//ListNode struct for chained hash table
-//Unlikely that we'll need prev
-struct ListNode{
-	int key = -1;
-	ListNode* prev;
-	ListNode* next;
-};
-
 std::vector<int> linear_probing_table;
 std::vector<int> quadratic_probing_table;
 std::vector<int> double_hashing_table;
-std::vector<ListNode> chaining_table;
 
 void clear_table(int arg){
 	if(arg == 0){
@@ -32,8 +25,6 @@ void clear_table(int arg){
 		quadratic_probing_table.clear();
 	}else if(arg == 2){
 		double_hashing_table.clear();
-	}else if(arg == 3){
-		chaining_table.clear();
 	}
 }
 
