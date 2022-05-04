@@ -48,7 +48,7 @@ void runtime(void *(func)(void *)) {
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> duration = end - start;
 
-	std::cout << " [" << duration.count() << "]" << std::endl;
+	std::cout << " [" << duration.count() << "s]" << std::endl;
 }
 
 //create_input: creates a subset of the test array, subset is specified by arg
