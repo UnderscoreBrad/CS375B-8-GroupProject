@@ -25,6 +25,21 @@ std::vector<int> delete_data;
 std::vector<int> insert_data;
 unsigned long input_per_thread;
 
+// struct results {
+// 	string
+// };
+
+void runtime(void *(func)(void *)) {
+	auto start = std::chrono::system_clock::now();
+
+	func(NULL);
+
+	auto end = std::chrono::system_clock::now();
+	std::chrono::duration<double> duration = end - start;
+
+	std::cout << " [" << duration.count() << "]" << std::endl;
+}
+
 //create_input: creates a subset of the test array, subset is specified by arg
 //parallelized to speed up generating large input sizes.
 void *create_input(void* arg){
@@ -72,7 +87,6 @@ void generate_helper_arrays(unsigned long size){
 void* linear_probing_tests(void* arg){
 	clear_table(FLAG_LINEAR);
 	//test 1: division with m = size, full table
-	auto start = std::chrono::system_clock::now();
 	unsigned collisions = 0;
 	unsigned m = input.size();
 	double A = 0.0;
@@ -80,9 +94,7 @@ void* linear_probing_tests(void* arg){
 	collisions += linear_delete(true, &delete_data, m, A);
 	collisions += linear_probing(true, &insert_data, m, A, input.size()); 
 	collisions += linear_search(true, &insert_data, m, A);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Linear Probing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
+    std::cout << "Linear Probing | size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
 	//test 2: multiplication with m = size
 
 	return arg;
@@ -92,7 +104,6 @@ void* linear_probing_tests(void* arg){
 void* quadratic_probing_tests(void* arg){
 	clear_table(FLAG_QUADRATIC);
 	//test 1: division with m = size, full table
-	auto start = std::chrono::system_clock::now();
 	unsigned collisions = 0;
 	unsigned m = input.size() + input.size()/3;
 	double A = 0.0;
@@ -102,9 +113,7 @@ void* quadratic_probing_tests(void* arg){
 	collisions += quadratic_delete(true, &delete_data, m, A, c1, c2);
 	collisions += quadratic_probing(true, &insert_data, m, A, m, c1, c2); 
 	//collisions += quadratic_search(true, &insert_data, m, A, c1, c2);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Quadratic Probing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
+    std::cout << "Quadratic Probing | input size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
 	//test 2: multiplication with m = ?, A = ?
 	return arg;
 }
@@ -112,7 +121,6 @@ void* quadratic_probing_tests(void* arg){
 //WARNING: Double cannot be used for hash tables with 100% capacity (unless we pick the perfect constants)
 void* double_hashing_tests(void* arg){
 	clear_table(FLAG_DOUBLE_HASH);
-	auto start = std::chrono::system_clock::now();
 	unsigned collisions = 0;
 	unsigned m = input.size() + input.size() / 3;
 	double A = 0.0;
@@ -122,49 +130,38 @@ void* double_hashing_tests(void* arg){
 	collisions += double_hashing_delete(true, true, &delete_data, m, m1, m2, A);
 	collisions += double_hashing(true, true, &insert_data, m, m1, m2, A, input.size() + input.size() / 3); 
 	collisions += double_hashing_search(true, true, &insert_data, m, m1, m2, A);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Double Hashing | size:" << input.size() << " | division | m = size | Completion Time: " << duration.count() << "s | Collisions: " << collisions << std::endl;
+    std::cout << "Double Hashing | size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
 	return arg;
 }
 
 // Runs test on chained hash table and prints out results
-void *chaining_tests(void *arg){
+void *chaining_test_division(void *arg){
 
 	int table_size = input.size();
 
 	// Division method test
-	auto start = std::chrono::system_clock::now();
 	ChainingTable ct(table_size, true, 0); 
 	ct.insert(input);
-	auto end = std::chrono::system_clock::now();
 
-	std::chrono::duration<double> time = end - start;
 	std::cout << "Chained Hash Table | "
 	          << "Size: " << table_size << " | "
 	          << "Division hashing | "
-	          << "m = size | "
-	          << "Completion time: " << time.count() << "s | "
+	          << "m = " << input.size()
 	          << "Collisions: " << ct.get_collisions() << " | "
-	          << "Load factor: " << ct.load_factor()
-	          << std::endl;
+	          << "Load factor: " << ct.load_factor();
+	return 0;
+}
 
-	// Multiplication method test
-	start = std::chrono::system_clock::now();
-	ct = ChainingTable(table_size, false, .618);
+void *chaining_test_multiplication(void *arg){
+	int table_size = input.size();
+	ChainingTable ct(table_size, false, .618); 
 	ct.insert(input);
-	end = std::chrono::system_clock::now();
 
-	time = end - start;
 	std::cout << "Chained Hash Table | "
 	          << "Size: " << table_size << " | "
 	          << "Multiplication hashing | "
-	          << "m = size | A = .618 | "
-	          << "Completion time: " << time.count() << "s | "
-	          << "Collisions: " << ct.get_collisions() << " | "
-	          << "Load factor: " << ct.load_factor()
-	          << std::endl;
-
+	          << "m = " << input.size() << " | A = .618 | "
+	          << "Load factor: " << ct.load_factor();
 	return 0;
 }
 
@@ -206,10 +203,11 @@ int main(int argc, char* argv[]){
 	//mostly because i was lazy about how i set up the tests.
 
 	//these tests are just to test functionality, they aren't fully implemented yet.
-	//linear_probing_tests(nullptr); // slow!
-	quadratic_probing_tests(nullptr);
-	double_hashing_tests(nullptr);
-	chaining_tests(nullptr);
+	runtime(linear_probing_tests);
+	runtime(quadratic_probing_tests);
+	runtime(double_hashing_tests);
+	runtime(chaining_test_division);
+	runtime(chaining_test_multiplication);
 
 	return EXIT_SUCCESS;
 }
