@@ -175,13 +175,21 @@ void getConstraints(int constraint_line){
 	}
 	std::fstream file;
 	file.open("constraints.txt",std::ios::in);
-	int i = 0;
+	int i = 1; // Need to count from 1 to line up with constraints.txt
 	std::string constraints;
 	if(file.is_open()){
 		std::string temp;
-		while(getline(file,temp)){
-			//std::cout << temp << std::endl;
-			if(i == constraint_line){
+		while(i <= constraint_line){
+			getline(file,temp);
+			
+			//std::cout << "temp: " << temp << std::endl;
+
+			// This line is a comment, do not run any tests.
+			if (i == constraint_line) {
+				if (temp[0] == '#' || temp.empty()) {
+					exit(0);
+				}
+
 				constraints = temp;
 				file.close();
 				break;

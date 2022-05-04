@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Usage: ./run_tests <start> <end>
+#	 Runs all tests from start to end (inclusive)
+#      
+#        ./run_tests <start>
+#        Runs test at start and all those after it
+#
+#        ./run_tests
+#	 Runs all tests
+
+start="${1:-2}"
+linecount="${2:-$(wc -l < constraints.txt)}"
+
+for (( line=$start; line<=$linecount + 1; line++ ))
+do
+	echo "./hashing_test $line"
+	echo
+	./hashing_test ${line}
+	echo
+done
