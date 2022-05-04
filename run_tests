@@ -12,10 +12,9 @@
 start="${1:-2}"
 linecount="${2:-$(wc -l < constraints.txt)}"
 
-for (( line=$start; line<=$linecount + 1; line++ ))
+for (( line=$start; line<=$linecount; line++ ))
 do
 	echo "./hashing_test $line"
-	echo
 	./hashing_test ${line}
 	echo
 done
