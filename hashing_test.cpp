@@ -202,13 +202,18 @@ void getConstraints(int constraint_line){
 	m = stol(cons[2]);
 	m1 = stol(cons[3]);
 	m2 = stol(cons[4]);
-	A = stol(cons[5]);
+	A = stod(cons[5])/1000.0;
 	c1 = stol(cons[6]);
 	c2 = stol(cons[7]);
 	chain_m = stol(cons[8]);
 	division = cons[9] == "div";
 	input_max = stoi(cons[10]);
-	std::cout << division << std::endl;
+	std::cout 	<< "Constraints:" << std::endl;
+	std::cout 	<< "m=" << m << " | m1=" << m1 
+				<< " | m2=" << m2 << " | A=" 
+				<< A << " | c1=" << c1 << " | c2=" << c2 
+				<< " | chain_m=" << chain_m << " | division=" << division
+				<< " | max_input_range=" << input_max << std::endl;
 }
 
 void setup(int argc, char *argv[]) {
