@@ -48,7 +48,7 @@ void ChainingTable::remove(int key)
 	// Does not matter if keys are unique
 	if(table[i].size() > 0){
 		table[i].remove(key);
-		collis += table[i].size() - 1; //we need a way to approximate collisions on delete
+		collis += table[i].size()/2; //we need a way to approximate collisions on delete
 	}
 }
 
