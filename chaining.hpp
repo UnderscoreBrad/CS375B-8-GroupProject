@@ -27,6 +27,8 @@ public:
 	
 	void remove(int key);
 
+	void search(int key);
+
 	// Calculates the load factor
 	float load_factor();
 

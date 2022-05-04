@@ -46,7 +46,21 @@ void ChainingTable::remove(int key)
 		
 	// WARNING: Will remove ALL occurances of key
 	// Does not matter if keys are unique
-	table[i].remove(key);
+	if(table[i].size() > 0){
+		table[i].remove(key);
+		collis += table[i].size() - 1; //we need a way to approximate collisions on delete
+	}
+}
+
+void ChainingTable::search(int key){
+	int i = hash_index(division, slots, A, key);
+	list<int>::iterator it = table[i].begin();
+	for(unsigned x = 0; x < table[i].size(); x++){
+		if(*it == key){
+			break;
+		}
+		collis++;
+	}
 }
 
 float ChainingTable::load_factor()
