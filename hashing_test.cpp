@@ -2,6 +2,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <pthread.h>
 #include <chrono>
@@ -13,8 +14,6 @@
 #define SIZE_DEFAULT 100000
 #define THREAD_DEFAULT 1
 #define THREAD_MAX 16
-#define INPUT_MIN 0
-#define INPUT_MAX 10000
 #define FLAG_LINEAR 0
 #define FLAG_QUADRATIC 1
 #define FLAG_DOUBLE_HASH 2
@@ -24,6 +23,18 @@ std::vector<int> input;
 std::vector<int> delete_data;
 std::vector<int> insert_data;
 unsigned long input_per_thread;
+
+unsigned input_size;
+unsigned table_size;
+unsigned m;
+unsigned m1;
+unsigned m2;
+unsigned c1;
+unsigned c2;
+double A;
+bool division;
+int input_max;
+unsigned chain_m;
 
 // struct results {
 // 	string
@@ -45,7 +56,7 @@ void runtime(void *(func)(void *)) {
 void *create_input(void* arg){
 	unsigned long lower_bound = *(unsigned long*) arg;
 	unsigned long upper_bound = lower_bound + input_per_thread;
-	std::uniform_int_distribution<int> unif(INPUT_MIN,INPUT_MAX);
+	std::uniform_int_distribution<int> unif(0,input_max);
 	std::default_random_engine random;
 	random.seed(pthread_self());
 	for(unsigned long i = lower_bound; i < upper_bound; i++){
@@ -76,7 +87,7 @@ void generate_input_vector(unsigned long input_size, unsigned thread_count){
 
 void generate_helper_arrays(unsigned long size){
 	insert_data.resize(size);
-	std::uniform_int_distribution<int> unif(INPUT_MIN,INPUT_MAX);
+	std::uniform_int_distribution<int> unif(0,input_max);
 	std::default_random_engine random;
 	random.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	for(unsigned long i = 0; i < size; i++){
@@ -86,15 +97,12 @@ void generate_helper_arrays(unsigned long size){
 
 void* linear_probing_tests(void* arg){
 	clear_table(FLAG_LINEAR);
-	//test 1: division with m = size, full table
 	unsigned collisions = 0;
-	unsigned m = input.size();
-	double A = 0.0;
-	collisions += linear_probing(true, &input, m, A, input.size());
+	collisions += linear_probing(true, &input, m, A, table_size);
 	collisions += linear_delete(true, &delete_data, m, A);
-	collisions += linear_probing(true, &insert_data, m, A, input.size()); 
+	collisions += linear_probing(true, &insert_data, m, A, table_size); 
 	collisions += linear_search(true, &insert_data, m, A);
-    std::cout << "Linear Probing | size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
+    std::cout << "Linear Probing | size:" << input.size() << " | Collisions: " << collisions;
 	//test 2: multiplication with m = size
 
 	return arg;
@@ -103,18 +111,12 @@ void* linear_probing_tests(void* arg){
 //WARNING: Quadratic probing cannot be used for hash tables with 100% capacity (unless we pick the perfect constants)
 void* quadratic_probing_tests(void* arg){
 	clear_table(FLAG_QUADRATIC);
-	//test 1: division with m = size, full table
 	unsigned collisions = 0;
-	unsigned m = input.size() + input.size()/3;
-	double A = 0.0;
-	unsigned c1 = 1;
-	unsigned c2 = 2;
-	collisions += quadratic_probing(true, &input, m, A, m, c1, c2);
+	collisions += quadratic_probing(true, &input, m, A, table_size, c1, c2);
 	collisions += quadratic_delete(true, &delete_data, m, A, c1, c2);
-	collisions += quadratic_probing(true, &insert_data, m, A, m, c1, c2); 
-	//collisions += quadratic_search(true, &insert_data, m, A, c1, c2);
-    std::cout << "Quadratic Probing | input size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
-	//test 2: multiplication with m = ?, A = ?
+	collisions += quadratic_probing(true, &insert_data, m, A, table_size, c1, c2); 
+	collisions += quadratic_search(true, &insert_data, m, A, c1, c2);
+    std::cout << "Quadratic Probing | input size:" << input.size() << "  | Collisions: " << collisions;
 	return arg;
 }
 
@@ -122,37 +124,38 @@ void* quadratic_probing_tests(void* arg){
 void* double_hashing_tests(void* arg){
 	clear_table(FLAG_DOUBLE_HASH);
 	unsigned collisions = 0;
-	unsigned m = input.size() + input.size() / 3;
-	double A = 0.0;
-	unsigned m1 = input.size() + input.size() / 3;//97861;
-	unsigned m2 = input.size() + input.size() / 3;//99409;
-	collisions += double_hashing(true, true, &input, m, m1, m2, A, input.size() + input.size() / 3);
+	collisions += double_hashing(true, true, &input, m, m1, m2, A, table_size);
 	collisions += double_hashing_delete(true, true, &delete_data, m, m1, m2, A);
-	collisions += double_hashing(true, true, &insert_data, m, m1, m2, A, input.size() + input.size() / 3); 
+	collisions += double_hashing(true, true, &insert_data, m, m1, m2, A, table_size); 
 	collisions += double_hashing_search(true, true, &insert_data, m, m1, m2, A);
-    std::cout << "Double Hashing | size:" << input.size() << " | division | m = " << m << " | Collisions: " << collisions;
+    std::cout << "Double Hashing | input size:" << input.size() << " | Collisions: " << collisions;
 	return arg;
 }
 
 // Runs test on chained hash table and prints out results
-void *chaining_test_division(void *arg){
+void *chaining_test(void *arg){
 
 	int table_size = input.size();
 
 	// Division method test
-	ChainingTable ct(table_size, true, 0); 
+	ChainingTable ct(chain_m, division, A); 
 	ct.insert(input);
+	for(int i = 0; i < delete_data.size(); i++){
+		ct.remove(delete_data[i]);
+	}
+	ct.insert(insert_data);
+	for(int i = 0; i < insert_data.size(); i++){
+		ct.search(insert_data[i]);
+	}
 
 	std::cout << "Chained Hash Table | "
-	          << "Size: " << table_size << " | "
-	          << "Division hashing | "
-	          << "m = " << input.size()
+	          << "input size: " << table_size << " | "
 	          << "Collisions: " << ct.get_collisions() << " | "
 	          << "Load factor: " << ct.load_factor();
 	return 0;
 }
 
-void *chaining_test_multiplication(void *arg){
+/*void *chaining_test_multiplication(void *arg){
 	int table_size = input.size();
 	ChainingTable ct(table_size, false, .618); 
 	ct.insert(input);
@@ -163,17 +166,60 @@ void *chaining_test_multiplication(void *arg){
 	          << "m = " << input.size() << " | A = .618 | "
 	          << "Load factor: " << ct.load_factor();
 	return 0;
+}*/
+
+void getConstraints(int constraint_line){
+	if(constraint_line <= 0){
+		std::cout << "invalid constraint argument" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	std::fstream file;
+	file.open("constraints.txt",std::ios::in);
+	int i = 0;
+	std::string constraints;
+	if(file.is_open()){
+		std::string temp;
+		while(getline(file,temp)){
+			//std::cout << temp << std::endl;
+			if(i == constraint_line){
+				constraints = temp;
+				file.close();
+				break;
+			}
+			i++;
+		}
+		file.close();
+	}
+	std::vector<std::string> cons;
+	std::stringstream sstream(constraints);
+    std::string word;
+    while (getline(sstream, word, ' ')){
+        word.erase(std::remove_if(word.begin(), word.end(), ispunct), word.end());
+        cons.push_back(word);
+    }
+	input_size = stol(cons[0]);
+	table_size = stol(cons[1]);
+	m = stol(cons[2]);
+	m1 = stol(cons[3]);
+	m2 = stol(cons[4]);
+	A = stol(cons[5]);
+	c1 = stol(cons[6]);
+	c2 = stol(cons[7]);
+	chain_m = stol(cons[8]);
+	division = cons[9] == "div";
+	input_max = stoi(cons[10]);
+	std::cout << division << std::endl;
 }
 
 void setup(int argc, char *argv[]) {
-	unsigned long input_size = SIZE_DEFAULT;
+	unsigned constraints_line = 1;
+	input_size = SIZE_DEFAULT;
 	unsigned thread_count = THREAD_DEFAULT;
 	bool unique = false;
-
-	if (argc > 1) input_size = std::stol(argv[1]);
+	if (argc > 1) constraints_line = std::stol(argv[1]);
 	if (argc > 2) thread_count = std::stoi(argv[2]);
 	if (argc > 3) unique = (strcmp(argv[3], "unique") == 0);
-
+	getConstraints(constraints_line);
 	unsigned long sz = input_size / 100;
 	input.resize(input_size);   
 	delete_data.resize(sz);
@@ -194,7 +240,6 @@ void setup(int argc, char *argv[]) {
 //if not specified, use default
 int main(int argc, char* argv[]){
 	setup(argc, argv);
-
 	//At this point, the vector input holds everything we need to insert into our tables.
 
 	//When testing, due to structure, we cannot test two of the same type of table simultaneously.
@@ -206,8 +251,8 @@ int main(int argc, char* argv[]){
 	runtime(linear_probing_tests);
 	runtime(quadratic_probing_tests);
 	runtime(double_hashing_tests);
-	runtime(chaining_test_division);
-	runtime(chaining_test_multiplication);
+	runtime(chaining_test);
+	//runtime(chaining_test_multiplication);
 
 	return EXIT_SUCCESS;
 }
