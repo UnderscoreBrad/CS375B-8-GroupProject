@@ -36,7 +36,7 @@ unsigned long hash_index(bool division, unsigned m, double A, int key, int i){
 	if(division){
 		return (key+i) % m;
 	}else{
-		return floor(  m * (  (float) (key+i)*A - floor((float) (key+i)*A)  )  );
+		return floor((float)m * ((float) (key+i)*A - floor((float) (key+i)*A)));
 		//return floor((double)m * ((double)(key+i) * A) - floor((double)(key+i) * A));
 	}
 }

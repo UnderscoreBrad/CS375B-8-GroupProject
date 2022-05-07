@@ -98,10 +98,10 @@ void generate_helper_arrays(unsigned long size){
 void* linear_probing_tests(void* arg){
 	clear_table(FLAG_LINEAR);
 	unsigned collisions = 0;
-	collisions += linear_probing(true, &input, m, A, table_size);
-	collisions += linear_delete(true, &delete_data, m, A);
-	collisions += linear_probing(true, &insert_data, m, A, table_size); 
-	collisions += linear_search(true, &insert_data, m, A);
+	collisions += linear_probing(division, &input, m, A, table_size);
+	collisions += linear_delete(division, &delete_data, m, A);
+	collisions += linear_probing(division, &insert_data, m, A, table_size); 
+	collisions += linear_search(division, &insert_data, m, A);
     std::cout << "Linear Probing | size:" << input.size() << " | Collisions: " << collisions;
 	//test 2: multiplication with m = size
 
@@ -112,10 +112,10 @@ void* linear_probing_tests(void* arg){
 void* quadratic_probing_tests(void* arg){
 	clear_table(FLAG_QUADRATIC);
 	unsigned collisions = 0;
-	collisions += quadratic_probing(true, &input, m, A, table_size, c1, c2);
-	collisions += quadratic_delete(true, &delete_data, m, A, c1, c2);
-	collisions += quadratic_probing(true, &insert_data, m, A, table_size, c1, c2); 
-	collisions += quadratic_search(true, &insert_data, m, A, c1, c2);
+	collisions += quadratic_probing(division, &input, m, A, table_size, c1, c2);
+	collisions += quadratic_delete(division, &delete_data, m, A, c1, c2);
+	collisions += quadratic_probing(division, &insert_data, m, A, table_size, c1, c2); 
+	collisions += quadratic_search(division, &insert_data, m, A, c1, c2);
     std::cout << "Quadratic Probing | input size:" << input.size() << "  | Collisions: " << collisions;
 	return arg;
 }
@@ -124,10 +124,10 @@ void* quadratic_probing_tests(void* arg){
 void* double_hashing_tests(void* arg){
 	clear_table(FLAG_DOUBLE_HASH);
 	unsigned collisions = 0;
-	collisions += double_hashing(true, true, &input, m, m1, m2, A, table_size);
-	collisions += double_hashing_delete(true, true, &delete_data, m, m1, m2, A);
-	collisions += double_hashing(true, true, &insert_data, m, m1, m2, A, table_size); 
-	collisions += double_hashing_search(true, true, &insert_data, m, m1, m2, A);
+	collisions += double_hashing(division, division, &input, m, m1, m2, A, table_size);
+	collisions += double_hashing_delete(division, division, &delete_data, m, m1, m2, A);
+	collisions += double_hashing(division, division, &insert_data, m, m1, m2, A, table_size); 
+	collisions += double_hashing_search(division, division, &insert_data, m, m1, m2, A);
     std::cout << "Double Hashing | input size:" << input.size() << " | Collisions: " << collisions;
 	return arg;
 }
@@ -210,7 +210,7 @@ void getConstraints(int constraint_line){
 	m = stol(cons[2]);
 	m1 = stol(cons[3]);
 	m2 = stol(cons[4]);
-	A = stod(cons[5])/1000.0;
+	A = stod(cons[5])/100000000000.0;
 	c1 = stol(cons[6]);
 	c2 = stol(cons[7]);
 	chain_m = stol(cons[8]);
