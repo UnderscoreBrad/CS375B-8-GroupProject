@@ -102,7 +102,7 @@ void* linear_probing_tests(void* arg){
 	collisions += linear_delete(division, &delete_data, m, A);
 	collisions += linear_probing(division, &insert_data, m, A, table_size); 
 	collisions += linear_search(division, &insert_data, m, A);
-    std::cout << "Linear Probing | size:" << input.size() << " | Collisions: " << collisions;
+    std::cout << "Linear Probing | input size:" << input.size() << " | Collisions: " << collisions;
 	//test 2: multiplication with m = size
 
 	return arg;
