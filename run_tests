@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Usage: ./run_tests <start> <end>
 #	 Runs all tests from start to end (inclusive)
